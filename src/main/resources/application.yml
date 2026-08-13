@@ -1,0 +1,57 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: push-notification-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pushnotificationdb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      keepalive-time: 30000
+      connection-timeout: 8000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      minimum-idle: 2
+      maximum-pool-size: 10
+      validation-timeout: 3000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+app:
+  rabbitmq:
+    exchange: notification.topic
+    inbound:
+      exchange: ${PUSH_NOTIFICATION_EXCHANGE:push-notification-exchange}
+      queue: ${PUSH_NOTIFICATION_QUEUE:push-notification-queue}
+      routing-key: ${PUSH_NOTIFICATION_ROUTING_KEY:push-notification.request}
+    queues:
+      mail: ${MAIL_RABBITMQ_QUEUE:mail.send.queue}
+      telegram: ${TELEGRAM_RABBITMQ_QUEUE:telegram.send.queue}
+    routing-keys:
+      mail: ${MAIL_RABBITMQ_ROUTING_KEY:mail.send}
+      telegram: ${TELEGRAM_RABBITMQ_ROUTING_KEY:telegram.send}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  api-docs:
+    path: /api/v1/docs
+  swagger-ui:
+    path: /api/v1/swagger-ui
