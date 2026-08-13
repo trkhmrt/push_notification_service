@@ -10,6 +10,7 @@ public enum NotificationMessageType {
     PAYMENT_CONFIRMATION,
     PAYMENT_REFUND,
     PRO_TRIAL_EXPIRY_REMINDER,
+    SMART_REPORT_READY,
     REQUEST_FORM,
     GENERIC;
 
