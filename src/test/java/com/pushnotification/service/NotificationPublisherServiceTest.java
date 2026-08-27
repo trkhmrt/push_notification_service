@@ -6,6 +6,7 @@ import com.pushnotification.domain.NotificationMessageType;
 import com.pushnotification.dto.NotificationRequest;
 import com.pushnotification.dto.NotificationResponse;
 import com.pushnotification.dto.Recipients;
+import com.pushnotification.dto.SmtpAccount;
 import com.pushnotification.messaging.ChannelMessageMapperRegistry;
 import com.pushnotification.messaging.mail.MailMessageMapper;
 import com.pushnotification.messaging.mail.MailQueueMessage;
@@ -78,7 +79,9 @@ class NotificationPublisherServiceTest {
                 Map.of("customerName", "Tarik"),
                 null,
                 null,
-                null
+                null,
+                "owner@example.com",
+                "AYA Roof Lounge"
         );
 
         NotificationResponse response = notificationPublisherService.publish(request, null);
@@ -93,9 +96,49 @@ class NotificationPublisherServiceTest {
         MailQueueMessage message = messageCaptor.getValue();
         assertThat(message.serviceName()).isEqualTo("payment-service");
         assertThat(message.to()).isEqualTo("user@example.com");
+        assertThat(message.from()).isEqualTo("owner@example.com");
+        assertThat(message.fromName()).isEqualTo("AYA Roof Lounge");
+        assertThat(message.smtp()).isNull();
         assertThat(response.results()).hasSize(1);
         assertThat(response.results().getFirst().channel()).isEqualTo(NotificationChannel.MAIL);
         assertThat(response.results().getFirst().routingKey()).isEqualTo("mail.send");
+    }
+
+    @Test
+    void publish_whenSmtpAccountProvided_thenForwardToMailQueue() {
+        SmtpAccount smtp = new SmtpAccount(
+                "smtp.hostinger.com",
+                465,
+                "rezervasyon@aya-roof.com",
+                "secret",
+                true,
+                false
+        );
+        NotificationRequest request = new NotificationRequest(
+                null,
+                List.of(NotificationChannel.MAIL),
+                "aya-roof-lounge",
+                NotificationMessageType.RESERVATION_CONFIRMATION,
+                new Recipients("guest@example.com", List.of(), List.of()),
+                null,
+                Map.of("reference", "ABCD1234"),
+                null,
+                null,
+                null,
+                "rezervasyon@aya-roof.com",
+                "AYA Roof Lounge",
+                smtp
+        );
+
+        notificationPublisherService.publish(request, null);
+
+        ArgumentCaptor<MailQueueMessage> messageCaptor = ArgumentCaptor.forClass(MailQueueMessage.class);
+        verify(rabbitTemplate).convertAndSend(
+                eq("notification.topic"),
+                eq("mail.send"),
+                messageCaptor.capture()
+        );
+        assertThat(messageCaptor.getValue().smtp()).isEqualTo(smtp);
     }
 
     @Test

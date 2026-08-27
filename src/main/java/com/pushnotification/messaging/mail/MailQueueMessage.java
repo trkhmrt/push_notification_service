@@ -1,5 +1,7 @@
 package com.pushnotification.messaging.mail;
 
+import com.pushnotification.dto.SmtpAccount;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,10 @@ public record MailQueueMessage(
         String subject,
         String body,
         Boolean html,
-        Map<String, Object> templateData
+        Map<String, Object> templateData,
+        String from,
+        String fromName,
+        SmtpAccount smtp
 ) {
 
     public MailQueueMessage {

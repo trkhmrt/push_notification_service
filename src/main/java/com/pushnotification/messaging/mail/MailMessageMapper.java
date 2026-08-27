@@ -25,7 +25,10 @@ public class MailMessageMapper implements ChannelMessageMapper {
                 request.subject(),
                 stringValue(request.templateData().get("message")),
                 false,
-                request.templateData()
+                request.templateData(),
+                request.from(),
+                request.fromName(),
+                request.smtp()
         );
     }
 
