@@ -12,6 +12,8 @@ public enum NotificationMessageType {
     PRO_TRIAL_EXPIRY_REMINDER,
     SMART_REPORT_READY,
     REQUEST_FORM,
+    RESERVATION_CONFIRMATION,
+    RESERVATION_CREATED,
     GENERIC;
 
     @JsonCreator
