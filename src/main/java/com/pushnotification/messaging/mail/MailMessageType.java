@@ -2,6 +2,7 @@ package com.pushnotification.messaging.mail;
 
 public enum MailMessageType {
     PASSWORD_RESET,
+    EMAIL_VERIFICATION,
     NEW_REGISTRATION,
     PAYMENT_CONFIRMATION,
     PAYMENT_REFUND,
