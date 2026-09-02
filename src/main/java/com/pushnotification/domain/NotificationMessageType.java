@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum NotificationMessageType {
 
     PASSWORD_RESET,
+    EMAIL_VERIFICATION,
     NEW_REGISTRATION,
     PAYMENT_CONFIRMATION,
     PAYMENT_REFUND,
